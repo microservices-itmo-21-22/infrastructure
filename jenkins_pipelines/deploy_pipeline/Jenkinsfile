@@ -27,7 +27,7 @@ pipeline {
                             docker rm $name_of_service;
                         fi
                 '''
-                    sh 'docker run -d --network=microservices -l prometheus-job=$name_of_service --name=$name_of_service --env LOGSTASH_URL=logstash:5000 ghcr.io/microservices-itmo-21-22/$name_of_service'
+                    sh 'docker run -d --network=elk_stack -l prometheus-job=$name_of_service --name=$name_of_service --env LOGSTASH_URL=logstash:5000 ghcr.io/microservices-itmo-21-22/$name_of_service'
                 
             }
         }
