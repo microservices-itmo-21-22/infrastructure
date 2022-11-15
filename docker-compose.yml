@@ -41,22 +41,23 @@ services:
    depends_on:
      - elasticsearch
   
-  jenkins:
-    image: jenkins/jenkins:lts
-    privileged: true
-    user: root
-    restart: unless-stopped
-    ports:
-     - 8080:8080
-    container_name: jenkins
-    volumes:
-      - jenkins_data:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/bin/docker:/usr/bin/docker
-    networks:
-     - elk_stack
-     depends_on:
-     - elasticsearch
+ jenkins:
+  image: jenkins/jenkins:lts
+  privileged: true
+  user: root
+  restart: unless-stopped
+  ports:
+    - 8080:8080
+  container_name: jenkins
+  volumes:
+    - jenkins_data:/var/jenkins_home
+    - /var/run/docker.sock:/var/run/docker.sock
+    - /usr/bin/docker:/usr/bin/docker
+  networks:
+    - elk_stack
+  depends_on:
+  - elasticsearch
+
 networks:
  elk_stack:
    driver: bridge
