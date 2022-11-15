@@ -1,0 +1,11 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Restore') {
+            steps {
+                sh 'docker exec postgresql psql -f /var/lib/postgresql/data/$file_name template1'
+            }
+        }
+    }
+}

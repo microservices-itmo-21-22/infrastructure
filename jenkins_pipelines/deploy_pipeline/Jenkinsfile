@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Create database'){
+            steps{
+                sh 'docker exec postgresql psql $name_of_service -c "" 2>/dev/null || docker exec postgresql createdb -e $name_of_service'
+            }
+        }
+        
+        stage('Pull microservice'){
+            steps{
+                sh 'docker pull ghcr.io/microservices-itmo-21-22/$name_of_service'
+            }
+        }
+        
+        stage('Run microservice') {
+            steps {
+                    sh '''
+                        if [ "$(docker ps -qa -f name=$name_of_service)" ]; then
+                            echo ":: Found container - $name_of_service"
+                            if [ "$(docker ps -q -f name=$name_of_service)" ]; then
+                                echo ":: Stopping running container - $name_of_service"
+                                docker stop $name_of_service;
+                            fi
+                            echo ":: Removing stopped container - $name_of_service"
+                            docker rm $name_of_service;
+                        fi
+                '''
+                    sh 'docker run -d --network=elk_stack -l prometheus-job=$name_of_service --name=$name_of_service --env LOGSTASH_URL=logstash:5000 ghcr.io/microservices-itmo-21-22/$name_of_service'
+                
+            }
+        }
+    }
+}
