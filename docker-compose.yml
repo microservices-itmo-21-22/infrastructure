@@ -40,7 +40,27 @@ services:
      - elk_stack
   depends_on:
      - elasticsearch
-  
+
+ postgresql:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      PGUSER: app
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    container_name: postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U app"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+     - elk_stack
+     
  jenkins:
     image: jenkins/jenkins:lts
     privileged: true
@@ -70,6 +90,8 @@ services:
       - "--storage.tsdb.path=/prometheus"
       - "--storage.tsdb.retention.time=30d"
       - "--storage.tsdb.retention.size=10GB"
+    networks:
+      - elk_stack
     ports:
       - "9090:9090"
 
@@ -84,6 +106,9 @@ services:
       GF_USERS_ALLOW_SIGN_UP: false
     ports:
       - 3000:3000
+    networks:
+      - elk_stack
+
 
 networks:
  elk_stack:
@@ -91,4 +116,6 @@ networks:
    attachable: true
 volumes:
  elasticsearch:
+ pg_data:
  jenkins_data:
+
